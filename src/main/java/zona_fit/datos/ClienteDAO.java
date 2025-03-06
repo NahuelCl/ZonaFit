@@ -101,6 +101,28 @@ public class ClienteDAO implements IClienteDAO{
 
     @Override
     public boolean modificarCliente(Cliente cliente) {
+        PreparedStatement ps;
+        var con = Conexion.getConexion();
+        String sql = "UPDATE cliente SET nombre=?, apellido=?, membresia=? WHERE id=?";
+
+        try{
+            ps = con.prepareStatement(sql);
+            ps.setString(1,cliente.getNombre());
+            ps.setString(2,cliente.getApellido());
+            ps.setInt(3,cliente.getMembresia());
+            ps.setInt(4, cliente.getId());
+            ps.execute();
+            return true;
+        }catch(Exception e){
+            System.out.println("Error al modificar cliente" + e.getMessage());
+        }
+        finally{
+            try{
+                con.close();
+            } catch (Exception e) {
+                System.out.println("Error al cerrar conexion" + e.getMessage());
+            }
+        }
         return false;
     }
 
@@ -127,12 +149,19 @@ public class ClienteDAO implements IClienteDAO{
         else{
             System.out.println("No se encontro registro");
         }*/
-        var nuevoCliente = new Cliente("Samira", "Clauser", 201);
+        /*var nuevoCliente = new Cliente("Samira", "Clauser", 201);
         var agregado = clienteDao.agregarCliente(nuevoCliente);
         if(agregado)
             System.out.println("Agregado correctamente " + nuevoCliente);
         else
-            System.out.println("Agregado fallido");
+            System.out.println("Agregado fallido");*/
+
+        var modificarCliente = new Cliente(2, "Carlos Daniel", "Ortiz", 202);
+        var modificado = clienteDao.modificarCliente(modificarCliente);
+        if(modificado)
+            System.out.println("Modificado correctamente " + modificarCliente);
+        else
+            System.out.println("Modificado fallido " + modificarCliente);
 
         System.out.println("Listar CLientes");
         var clientes = clienteDao.listarCLiente();
