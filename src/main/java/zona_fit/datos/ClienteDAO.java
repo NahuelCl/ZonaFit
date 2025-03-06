@@ -6,6 +6,7 @@ import zona_fit.dominio.Cliente;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -73,6 +74,28 @@ public class ClienteDAO implements IClienteDAO{
 
     @Override
     public boolean agregarCliente(Cliente cliente) {
+        PreparedStatement ps;
+        var con = Conexion.getConexion();
+        String sql = "INSERT INTO cliente(nombre, apellido, membresia) "+" VALUES(?, ?, ?)";
+        try{
+            ps = con.prepareStatement(sql);
+            ps.setString(1,cliente.getNombre());
+            ps.setString(2,cliente.getApellido());
+            ps.setInt(3,cliente.getMembresia());
+            ps.execute();
+            return true;
+        }catch(Exception e){
+            System.out.println("Error al agregar cliente" + e.getMessage());
+        }
+        finally{
+            try{
+                con.close();
+            } catch (Exception e) {
+                System.out.println("Error al cerrar conexion" + e.getMessage());
+            }
+        }
+
+
         return false;
     }
 
@@ -95,7 +118,7 @@ public class ClienteDAO implements IClienteDAO{
         var clientes = clienteDao.listarCLiente();
         clientes.forEach(System.out::println);*/
 
-        var cliente1 = new Cliente(1);
+      /*  var cliente1 = new Cliente(1);
         System.out.println("Cliente antes de la busqueda"+ cliente1);
         var encontrado = clienteDao.buscarClienteporId(cliente1);
         if(encontrado){
@@ -103,6 +126,16 @@ public class ClienteDAO implements IClienteDAO{
         }
         else{
             System.out.println("No se encontro registro");
-        }
+        }*/
+        var nuevoCliente = new Cliente("Samira", "Clauser", 201);
+        var agregado = clienteDao.agregarCliente(nuevoCliente);
+        if(agregado)
+            System.out.println("Agregado correctamente " + nuevoCliente);
+        else
+            System.out.println("Agregado fallido");
+
+        System.out.println("Listar CLientes");
+        var clientes = clienteDao.listarCLiente();
+        clientes.forEach(System.out::println);
     }
 }
